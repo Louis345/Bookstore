@@ -25,7 +25,7 @@ class BookShelf extends React.Component {
                         book.category = e.target.value
                         this.props.handleBookStatus(book);
                       }}
-                      defaultValue={this.props.bookStatus}
+                      value={this.props.bookStatus}
                     >
                       <option  disabled>Move to...</option>
                       <option value="currentlyReading">

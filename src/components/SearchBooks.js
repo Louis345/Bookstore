@@ -18,7 +18,7 @@ class SearchBooks extends React.Component {
       <div className="search-books">
         <div className="search-books-bar">
           <Link
-            to="/home"
+            to="/"
             className="close-search"
             >Close
           </Link>

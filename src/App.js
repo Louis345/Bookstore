@@ -16,40 +16,56 @@ class BooksApp extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      filterText: "",
+    userText: "",
       books: [],
-      filteredBooks: []
+    bookCollection: [],
+    bookShelf:''
     };
   }
   componentDidMount() {
     BooksAPI.getAll().then(books => {
       this.setState({
-        filteredBooks: books
+      bookCollection: books
       });
     });
   }
-  setBookShelf = filteredBooks => {
-    for (let collection of this.state.filteredBooks) {
-      for (let searchedBooks of filteredBooks) {
-        if (collection.id === searchedBooks.id) {
-          searchedBooks.shelf = collection.shelf;
-        }
-      }
-    }
 
-    this.setState({
-      books: filteredBooks
-    });
+  getBookShelf = bookId => {
+
+    //  this.state.books.filter((book,idx)=>{
+    //    console.log(`bookId  is ${bookId} and book.id is ${book.id}`)
+    //    console.log(book.id === bookId);
+    //    if(book.id === bookId){
+    //      console.log('match')
+    //    }
+    //  })
+
   };
+  bookShelfStatus =() =>{
+
+    return this.state.bookShelf;
+  }
   uniqueIdsFilter = searchedBooks => {
     let uniq = new Set();
-    let filteredBooks = null;
+    let bookCollection = null;
     let completedBooks = [];
     let unique = null;
     unique = searchedBooks.filter(
       (set => f => !set.has(f.id) && set.add(f.id))(new Set())
     );
-    this.setBookShelf(unique);
+    for (let collection of this.state.bookCollection) {
+        for (let searchedBooks of unique) {
+          if (collection.id === searchedBooks.id) {
+            console.log('test');
+            searchedBooks.shelf = collection.shelf;
+          }
+        }
+      }
+        console.log(unique);
+    this.setState({
+      books: unique
+    });
+
   };
 
   responseHasErrors = books => {
@@ -57,18 +73,19 @@ class BooksApp extends React.Component {
 
     return hasErrors;
   };
-  handleFilterTextInput = filterText => {
-    if (filterText) {
+  handleFilterTextInput = userInput => {
+    if (userInput) {
       this.setState({
-        filterText: filterText
+      userText: userInput
       });
 
-      BooksAPI.search(filterText).then(response => {
+      BooksAPI.search(userInput).then(response => {
         this.responseHasErrors(response) && this.uniqueIdsFilter(response);
+        console.log('bookAPI search');
       });
     } else {
       this.setState({
-        filterText: filterText,
+      userText: userInput,
         books: ""
       });
     }
@@ -77,15 +94,15 @@ class BooksApp extends React.Component {
     BooksAPI.update(book, book.category).then(response => {
       BooksAPI.getAll().then(books => {
         this.setState({
-          filteredBooks: books
+        bookCollection: books,
+        bookShelf:book
         });
       });
     });
   };
-  updateState = () => {
-    console.log("test");
-  };
+
   render() {
+    
     return (
       <div className="app">
         <Route
@@ -99,8 +116,8 @@ class BooksApp extends React.Component {
               <Books
                 searchedBooks={this.state.books}
                 modifyBooks={this.handleBookStatus}
-                bookCollection={this.state.filteredBooks}
-                updateState={this.state.updateState}
+                bookCollection={this.state.bookCollection}
+                bookShelfStatus={this.bookShelfStatus}
               />
             </div>}
         />
@@ -114,7 +131,7 @@ class BooksApp extends React.Component {
               {Object.keys(shelves).map(shelf =>
                 <BookShelf
                   title={shelves[shelf]}
-                  books={this.state.filteredBooks.filter(
+                  books={this.state.bookCollection.filter(
                     book => book.shelf === shelf
                   )}
                   handleBookStatus={this.handleBookStatus}
@@ -134,7 +151,7 @@ class BooksApp extends React.Component {
               {Object.keys(shelves).map(shelf =>
                 <BookShelf
                   title={shelves[shelf]}
-                  books={this.state.filteredBooks.filter(
+                  books={this.state.bookCollection.filter(
                     book => book.shelf === shelf
                   )}
                   handleBookStatus={this.handleBookStatus}

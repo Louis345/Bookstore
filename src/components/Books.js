@@ -4,6 +4,7 @@ class Books extends React.Component {
 
   displayBooks = () => {
 
+
     if (this.props.searchedBooks) {
 
       return this.props.searchedBooks.map((book, idx) => {
@@ -23,12 +24,15 @@ class Books extends React.Component {
                 <div className="book-shelf-changer">
                   <select
                     onChange={e => {
+                    
                       this.props.modifyBooks({
                         id: book.id,
                         category: e.target.value
                       });
+                      book.shelf = e.target.value;
                     }}
-                    value={book.shelf}
+                   value={book.shelf}
+
                   >
                     <option value="none" disabled>Move to...</option>
                     <option value="currentlyReading">Currently Reading</option>
